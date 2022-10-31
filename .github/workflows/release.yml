@@ -1,0 +1,56 @@
+name: 'C++ CI'
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build_on_ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - run: sudo apt-get update
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+      - run: cmake --build . --target matrix
+      - run: ./matrix
+      - run: cpack
+      - run: dpkg -c matrix-0.0.${{ github.run_number }}-Linux.deb
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./matrix-0.0.${{ github.run_number }}-Linux.deb
+          asset_name: matrix-0.0.${{ github.run_number }}-Linux.deb
+          asset_content_type: application/vnd.debian.binary-package
+
+
+      - run: sed -i 's/MY_PROJECT_VERSION/0.0.${{ github.run_number }}/' Doxyfile
+      - run: sed -i "s/MY_PROJECT_VERSION/0.0.${{ github.run_number }}/" matrix.cpp
+      - run: sed -i "s/BUILD_DATE/$(date +'%Y-%m-%d')/" matrix.cpp
+      - run: mkdir docs; cd docs; mkdir html;
+      - run: touch docs/html/.nojekyll
+      - run: sudo apt-get install -y doxygen graphviz texlive-full
+      - run: doxygen Doxyfile
+      
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/html

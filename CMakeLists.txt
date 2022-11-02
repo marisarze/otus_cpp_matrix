@@ -5,8 +5,17 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
 project(matrix VERSION ${PROJECT_VESRION})
 
+include(FetchContent)
+FetchContent_Declare(fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(fmt)
 
-add_executable(matrix main.cpp)
+
+add_executable(matrix main.cpp matrix.h)
+
+target_link_libraries(matrix fmt)
 
 set_target_properties(matrix
     PROPERTIES
@@ -17,16 +26,16 @@ target_include_directories(matrix
     PRIVATE "${CMAKE_BINARY_DIR}"
 )
 
-add_subdirectory(tests)
-if (MSVC)
-    target_compile_options(matrix PRIVATE
-        /W4
-    )
-else ()
-    target_compile_options(matrix PRIVATE
-        -Wall -Wextra -pedantic -Werror
-    )
-endif()
+# add_subdirectory(tests)
+# if (MSVC)
+#     target_compile_options(matrix PRIVATE
+#         /W4
+#     )
+# else ()
+#     target_compile_options(matrix PRIVATE
+#         -Wall -Wextra -pedantic -Werror
+#     )
+# endif()
 
 
 

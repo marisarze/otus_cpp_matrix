@@ -12,6 +12,7 @@
 #pragma once
 #include <iostream>
 #include <map>
+#include <fmt/core.h>
 
 
 template <typename T, size_t num_dimensions, T default_value>
@@ -54,9 +55,7 @@ class Matrix<T, 1, default_value> {
 
 template <typename T, T default_value>
 T& Matrix<T, 1, default_value>::operator[](int index){
-    auto it = content.find(index);
-    if (it == content.end())
-        return defval;
+    content[index] = default_value;
     return content[index];
 };
 
@@ -64,7 +63,10 @@ T& Matrix<T, 1, default_value>::operator[](int index){
 template <typename T, T default_value>
 size_t Matrix<T, 1, default_value>::size(){
     size_t count = 0;
-    for(auto it=content.begin();it!=content.end();it++, count++){};
+    for(auto it=content.begin();it!=content.end();it++){
+        count++;
+        fmt::print("found: {}", it->second);
+    }
     return count;
 }
 

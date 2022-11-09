@@ -20,12 +20,9 @@ int main(int argc, char const *argv[])
         assert(matrix.size() == 0);
         matrix[100][100] = 314;
         matrix[100][110] = 315;
-        fmt::print("matrix[100][110]: {}\n", matrix[100][100]);
-        assert(matrix[100][100] == 314);
-        assert(matrix[100][110] == 315);
-        fmt::print("matrix[100][100]: {}\n", matrix[100][100]);
-        fmt::print("matrix[100][110]: {}\n", matrix[100][110]);
-        fmt::print("matrix_size: {}\n", matrix[100].size());
+        fmt::print("matrix[100][100]: {}\n", (int)matrix[100][100]);
+        fmt::print("matrix[100][110]: {}\n", (int)matrix[100][110]);
+        fmt::print("matrix_size: {}\n", (int)matrix[100].size());
         assert(matrix.size() == 1);
 
     }
